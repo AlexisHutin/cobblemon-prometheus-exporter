@@ -3,6 +3,7 @@ module github.com/AlexisHutin/cobblemon-prometheus-exporter
 go 1.23.2
 
 require (
+	github.com/Jeffail/gabs/v2 v2.7.0
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/prometheus/client_golang v1.20.4
 	github.com/prometheus/common v0.62.0
