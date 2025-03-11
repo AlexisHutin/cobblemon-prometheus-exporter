@@ -10,6 +10,7 @@ import (
 	exporter "github.com/AlexisHutin/cobblemon-prometheus-exporter/exporter"
 	"github.com/alecthomas/kingpin/v2"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	v2 "github.com/prometheus/client_golang/prometheus/collectors/version"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/promslog"
@@ -20,7 +21,6 @@ import (
 )
 
 const Namespace string = "cobblemon"
-const StatsDirectory string = "./testData/cobblemonplayerdata"
 
 var StatsList = []string{
 	"totalCaptureCount",
@@ -34,7 +34,24 @@ var StatsList = []string{
 	"totalTradedCount",
 }
 
+type Config struct {
+	WorldPath              *string `yaml:"world-path"`
+	DisableExporterMetrics *bool   `yaml:"disable-exporter-metrics"`
+}
+
+func NewConfig() *Config {
+	var (
+		worldPath = kingpin.Flag("mc.world", "Path the to world folder").Envar("MC_WORLD").Default("/minecraft/world").String()
+		disableExporterMetrics = kingpin.Flag("web.disable-exporter-metrics", "Disabling collection of exporter metrics (like go_*)").Envar("WEB_DISABLED_EXPORTER_METRICS").Bool()
+	)
+	return &Config{
+		WorldPath: worldPath,
+		DisableExporterMetrics: disableExporterMetrics,
+	}
+}
+
 func main() {
+	config := NewConfig()
 	promslogConfig := &promslog.Config{
 		Level: &promslog.AllowedLevel{},
 	}
@@ -50,11 +67,17 @@ func main() {
 
 	prometheus.MustRegister(v2.NewCollector("cobblemon-exporter"))
 
-	exporter, err := exporter.NewExporter(logger, Namespace, StatsDirectory, StatsList)
+	exporter, err := exporter.NewExporter(logger, Namespace, *config.WorldPath, StatsList)
 	if err != nil {
 		logger.Error("Failed to create exporter", "err", err)
 	}
 	prometheus.MustRegister(exporter)
+
+	logger.Info("Disabling collection of exporter metrics (like go_*)", "value", config.DisableExporterMetrics)
+	if *config.DisableExporterMetrics {
+		prometheus.Unregister(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
+		prometheus.Unregister(collectors.NewGoCollector())
+	}
 
 	http.Handle("/metrics", promhttp.Handler())
 
