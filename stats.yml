@@ -1,0 +1,75 @@
+stats: 
+  - name: totalCaptureCount
+    path: advancementData.totalCaptureCount
+
+  - name: totalEggsHatched
+    path: advancementData.totalEggsHatched
+
+  - name: totalEvolvedCount
+    path: advancementData.totalEvolvedCount
+
+  - name: totalBattleVictoryCount
+    path: advancementData.totalBattleVictoryCount
+
+  - name: totalPvPBattleVictoryCount
+    path: advancementData.totalPvPBattleVictoryCount
+
+  - name: totalPvWBattleVictoryCount
+    path: advancementData.totalPvWBattleVictoryCount
+
+  - name: totalPvNBattleVictoryCount
+    path: advancementData.totalPvNBattleVictoryCount
+
+  - name: totalShinyCaptureCount
+    path: advancementData.totalShinyCaptureCount
+
+  - name: totalTradedCount
+    path: advancementData.totalTradedCount
+
+  - name: totalNormalTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.normal
+
+  - name: totalGroundTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.ground
+
+  - name: totalFlyingTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.flying
+
+  - name: totalBugTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.bug
+
+  - name: totalPoisonTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.poison
+
+  - name: totalElectricTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.electric
+
+  - name: totalGrassTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.grass
+
+  - name: totalWaterTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.water
+
+  - name: totalFightingTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.fighting
+
+  - name: totalGhostTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.ghost
+
+  - name: totalFairyTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.fairy
+
+  - name: totalFireTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.fire
+
+  - name: totalDarkTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.dark
+
+  - name: totalPsychicTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.psychic
+
+  - name: totalRockTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.rock
+
+  - name: totalSteelTypeCapturedCount
+    path: advancementData.totalTypeCaptureCounts.steel

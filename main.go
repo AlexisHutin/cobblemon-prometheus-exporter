@@ -41,11 +41,12 @@ type Config struct {
 
 func NewConfig() *Config {
 	var (
-		worldPath = kingpin.Flag("mc.world", "Path the to world folder").Envar("MC_WORLD").Default("/minecraft/world").String()
+		worldPath              = kingpin.Flag("mc.world", "Path the to world folder").Envar("MC_WORLD").Default("/minecraft/world").String()
 		disableExporterMetrics = kingpin.Flag("web.disable-exporter-metrics", "Disabling collection of exporter metrics (like go_*)").Envar("WEB_DISABLED_EXPORTER_METRICS").Bool()
 	)
+
 	return &Config{
-		WorldPath: worldPath,
+		WorldPath:              worldPath,
 		DisableExporterMetrics: disableExporterMetrics,
 	}
 }
@@ -67,7 +68,12 @@ func main() {
 
 	prometheus.MustRegister(v2.NewCollector("cobblemon-exporter"))
 
-	exporter, err := exporter.NewExporter(logger, Namespace, *config.WorldPath, StatsList)
+	statsFile, err := os.ReadFile("stats.yml")
+	if err != nil {
+		logger.Error("Failed to read stats file", "err", err)
+	}
+
+	exporter, err := exporter.NewExporter(logger, Namespace, *config.WorldPath, statsFile)
 	if err != nil {
 		logger.Error("Failed to create exporter", "err", err)
 	}

@@ -10,14 +10,15 @@ import (
 
 	"github.com/Jeffail/gabs/v2"
 	"github.com/prometheus/client_golang/prometheus"
+	"gopkg.in/yaml.v2"
 )
 
 type Exporter struct {
-	logger  *slog.Logger
-	counter *prometheus.Desc
-	namespace *string
+	logger         *slog.Logger
+	counter        *prometheus.Desc
+	namespace      *string
 	statsDirectory *string
-	statsList []string
+	statsList      StatsList
 }
 
 type Player struct {
@@ -25,13 +26,30 @@ type Player struct {
 	Name string `json:"username"`
 }
 
-func NewExporter(logger *slog.Logger, namespace string, statsDirectory string, statsList []string) (*Exporter, error) {
+type Stat struct {
+	Name string `yaml:"name"`
+	Path string `yaml:"path"`
+}
+
+type StatsList struct {
+	Stats []Stat `yaml:"stats"`
+}
+
+func NewExporter(logger *slog.Logger, namespace string, statsDirectory string, statsFile []byte) (*Exporter, error) {
+
+	statsList := &StatsList{}
+
+	err := yaml.Unmarshal(statsFile, statsList)
+	if err != nil {
+		logger.Error("Failed to unmarshal stats file", "err", err)
+		return nil, err
+	}
 
 	return &Exporter{
-		logger: logger,
-		namespace: &namespace,
+		logger:         logger,
+		namespace:      &namespace,
 		statsDirectory: &statsDirectory,
-		statsList: statsList,
+		statsList:      *statsList,
 		counter: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "counter"),
 			"",
@@ -106,14 +124,20 @@ func (e *Exporter) getPlayerStats(ch chan<- prometheus.Metric) error {
 				return err
 			}
 
-			for _, statName := range e.statsList {
-				statPath := fmt.Sprintf("advancementData.%s", statName)
-				statData := jsonParsed.Path(statPath).Data().(float64)
+			for _, stat := range e.statsList.Stats {
+				statData := jsonParsed.Path(stat.Path).Data()
+
+				if statData == nil {
+					continue
+				}
+
+				floatStatData := statData.(float64)
+
 				ch <- prometheus.MustNewConstMetric(
 					e.counter,
 					prometheus.CounterValue,
-					statData,
-					player.Name, *e.namespace, statName,
+					floatStatData,
+					player.Name, *e.namespace, stat.Name,
 				)
 			}
 		}
